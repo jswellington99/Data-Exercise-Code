@@ -1,0 +1,85 @@
+---
+title: "Priorities Data Exercise"
+output:
+  word_document: default
+  html_document: default
+---
+```{r}
+library(tidyverse)
+library(dplyr)
+library(data.table)
+```
+
+```{r}
+#read in csv
+ads <- read.csv("/Users/jordanwellington/Desktop/Coded Ad Data.csv")
+```
+
+```{r}
+ads$sentiment <- as.factor(ads$sentiment)
+ads$advertiser_type <- as.factor(ads$advertiser_type)
+ads$ad_type <- as.factor(ads$ad_type)
+```
+
+```{r}
+#percentages based on sentiment
+sentiment <- ads %>% group_by(sentiment) %>% dplyr::summarize(ads = n(), percent = n()/25)
+sentiment
+```
+
+```{r}
+#percentages based on ad type
+adtype <- ads %>% group_by(ad_type) %>% dplyr::summarize(ads = n(), percent = n()/25)
+adtype
+```
+
+
+```{r}
+#create party variable
+ads$party <- ifelse(ads$advertiser_type == "Biden" | ads$advertiser_type == "Dem Orgs", "Dem", "Rep") 
+ads$party <- as.factor(ads$party)
+```
+
+```{r}
+#percentages based on party 
+party <- ads %>% group_by(party) %>% dplyr::summarize(ads = n(), percent = n()/25)
+party
+```
+
+```{r}
+#table of ad types within Democratic ads
+dem.ad.type <- ads %>% filter(party == "Dem") %>% group_by(ad_type) %>% dplyr::summarise(ads = n(), percent = ads/9, .groups = "keep")
+dem.ad.type
+```
+
+```{r}
+#table of ad types within Republican ads
+rep.ad.type <- ads %>% filter(party == "Rep") %>% group_by(ad_type) %>% dplyr::summarise(ads = n(), percent = ads/16, .groups = "keep")
+rep.ad.type
+```
+
+```{r}
+#table of ad sentiment within Democratic ads
+dem.ad.sent <- ads %>% filter(party == "Dem") %>% group_by(sentiment) %>% dplyr::summarise(ads = n(), percent = ads/9, .groups = "keep")
+dem.ad.sent
+```
+
+```{r}
+#table of ad sentiment within Republican ads
+rep.ad.sent <- ads %>% filter(party == "Rep") %>% group_by(sentiment) %>% dplyr::summarise(ads = n(), percent = ads/16, .groups = "keep")
+rep.ad.sent
+```
+
+
+```{r}
+#table of ad type and sentiment
+type.sentiment <- ads %>% group_by(ad_type, sentiment) %>% dplyr::summarise(count = n(), .groups = "keep")
+type.sentiment
+```
+
+```{r}
+summary(ads)
+```
+
+
+
